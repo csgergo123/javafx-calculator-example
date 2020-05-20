@@ -6,6 +6,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class CalculatorController {
 
     @FXML
@@ -38,13 +41,14 @@ public class CalculatorController {
         String operatorPressed = ((Button) event.getSource()).getText();
         System.out.println(operatorPressed);
         if (operatorPressed.equals("=")) {
-           if (operator.isEmpty()) {
-               return;
-           }
-           double number2 = Double.parseDouble(display.getText());
-           double result = calculator.calculate(number1, number2, operator);
-           display.setText(String.format("%.0f", result));
-           operator = "";
+            if (operator.isEmpty()) {
+                return;
+            }
+            double number2 = Double.parseDouble(display.getText());
+            double result = calculator.calculate(number1, number2, operator);
+            BigDecimal decimal = new BigDecimal(result).setScale(15, RoundingMode.HALF_UP).stripTrailingZeros();
+            display.setText(decimal.toPlainString());
+            operator = "";
         } else {
             if (! operator.isEmpty()) {
                 return;
@@ -55,4 +59,31 @@ public class CalculatorController {
         }
     }
 
+    @FXML
+    public void clear() {
+        number1 = 0;
+        operator = "";
+        display.setText("0");
+        startNumber = true;
+    }
+
+    @FXML
+    public void decimalPoint() {
+        String textNumber = display.getText();
+        if(textNumber.contains(".")) {
+            return;
+        }
+        display.setText(textNumber + ".");
+    }
+
+    @FXML
+    public void negation() {
+        String textNumber = display.getText();
+        if(textNumber.contains("-")) {
+            textNumber = textNumber.replace("-", "");
+        } else {
+            textNumber = "-" + textNumber;
+        }
+        display.setText(textNumber);
+    }
 }
